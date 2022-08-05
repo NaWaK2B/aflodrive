@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.js"></script>
+    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./css/responsive.css" />
+    <title>Document</title>
+  </head>
+  <body>
+    <header>
+      <div class="container_nav">
+        <div class="toggle_menu">
+          <i class="fa-solid fa-bars fa-lg"></i>
+        </div>
+        <div class="block_logo">
+          <h1>
+            <a href="#" onclick="change('')">Aflo</a>
+            <span>drive</span>
+          </h1>
+        </div>
+
+        <form class="block_search">
+          <input
+            id="recherche"
+            type="text"
+            placeholder="Vous recherchez un produit ..."
+            onkeyup="rechercher()"
+          />
+
+          <a href="#" class="loop">
+            <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+          </a>
+
+          <button type="submit">rechercher</button>
+        </form>
+
+        <div class="block_account">
+          <a href="#" class="log">
+            <i class="fa-solid fa-arrow-right-from-bracket fa-lg"></i>
+
+            <div class="user_text">
+              <p class="text_account">S'enregistrer</p>
+            </div>
+          </a>
+
+          <a href="#" class="user">
+            <i class="fa-regular fa-user fa-lg"></i>
+            <div class="user_text">
+              <p class="text_account">Se connecter</p>
+            </div>
+          </a>
+
+          <a href="./panier.html" class="cart">
+            <i class="fa-solid fa-cart-shopping fa-lg"></i>
+            <span id="item-num" class="item_number">0</span>
+            <div class="user_text">
+              <p class="text_account">Panier</p>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <nav>
+        <div class="block_nav">
+          <i class="fa-solid fa-bars-staggered toggle_produit"></i>
+          <h3>Rayon</h3>
+        </div>
+
+        <div class="block_link">
+          <a href="error.html">Nos Promotions</a>
+        </div>
+      </nav>
+    </header>
+
+    <section>
+      <div class="container_produit">
+        <div class="nav_produit">
+          <ul>
+            <!-- POUR ADRIEN -->
+            <li>
+              <a href="#" id="fruit-legume" onclick="change(id)"
+                >Fruits & légumes</a
+              >
+            </li>
+            <li>
+              <a href="#" id="viande-poisson" onclick="change(id)"
+                >Viande & Poisson</a
+              >
+            </li>
+            <li><a href="#" id="cremerie" onclick="change(id)">Crèmerie</a></li>
+            <li>
+              <a href="#" id="autre" onclick="change(id)">Autre</a>
+            </li>
+          </ul>
+        </div>
+        <!-- Card produit -->
+
+        <h1 class="text_fruits">
+          <span>Pour des idées de recette aller sur le site </span>
+          <span>AFLOMIX</span>
+        </h1>
+
+        <div class="block-container">
+          <div id="resultat"></div>
+        </div>
+
+        <!-- ================== -->
+      </div>
+    </section>
+
+    <script>
+      $(document).ready(function () {
+        rechercher();
+        updatePanier();
+      });
+
+      function rechercher() {
+        var press = $("#recherche").val();
+        $.ajax({
+          url: "./Back/Controller.php",
+          dataType: "JSON",
+          type: "POST",
+          data: {
+            request: "recherche",
+            press: press,
+          },
+          success: function (response) {
+            $("#resultat").html(response);
+          },
+          error: function () {
+            alert("Error !");
+          },
+        });
+      }
+
+      function change(id) {
+        console.log("oui");
+
+        $.ajax({
+          url: "./Back/Controller.php",
+          dataType: "JSON",
+          type: "POST",
+          data: {
+            request: "change",
+            id: id,
+          },
+          success: function (response) {
+            $("#resultat").html(response);
+          },
+          error: function () {
+            alert("Error !");
+          },
+        });
+      }
+
+      function updatePanier() {
+        $.ajax({
+          url: "./Back/Controller.php",
+          dataType: "JSON",
+          type: "POST",
+          data: {
+            request: "updatePanier",
+          },
+          success: function (response) {
+            $("#item-num").html(response);
+          },
+          error: function () {
+            alert("Error !");
+          },
+        });
+      }
+
+      function addPanier(id) {
+        var nom_article = $("#nom_" + id).html();
+        var prix = $("#prix_" + id).html();
+        var quantite = $("#quantite_" + id).val();
+        $.ajax({
+          url: "./Back/fonctions-panier.php",
+          dataType: "JSON",
+          type: "POST",
+          data: {
+            id: id,
+            nom: nom_article,
+            prix: prix,
+            quantite: quantite,
+          },
+          success: function (response) {
+            alert(response["msg"]);
+            $("#item-num").html(response["quantitetotal"]);
+          },
+          error: function () {
+            alert("Error !");
+          },
+        });
+      }
+    </script>
+  </body>
+  <script src="./Js/script.js"></script>
+  <script
+    src="https://kit.fontawesome.com/96625a3117.js"
+    crossorigin="anonymous"
+  ></script>
+</html>
